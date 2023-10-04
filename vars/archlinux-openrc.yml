@@ -1,0 +1,6 @@
+---
+
+trivy_requirements:
+  - iproute
+
+...

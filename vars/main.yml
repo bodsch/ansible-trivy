@@ -1,0 +1,42 @@
+---
+
+trivy_main_version: "{{ trivy_version[0:3] }}"
+
+trivy_install_path: /usr/local/bin/trivy/{{ trivy_version }}
+
+trivy_delegate_to: localhost
+
+trivy_local_tmp_directory: "{{
+  lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+  default(lookup('env', 'HOME') ~ '/.cache/ansible/trivy', true) }}/{{ trivy_version }}"
+
+trivy_requirements:
+  - iproute2
+  - gzip
+
+# ----------------------------------------------------------------------------------------
+
+
+trivy_defaults_release:
+  download_url: https://github.com/aquasecurity/trivy/releases/
+  file: trivy_{{ trivy_version }}_{{ ansible_system }}-{{ system_architecture }}.tar.gz
+  binary: trivy
+  checksum: trivy_{{ trivy_version }}_checksums.txt
+
+# ----------------------------------------------------------------------------------------
+
+# download/v0.45.1/trivy_0.45.1_Linux-64bit.tar.gz
+
+# trivy_checksum_url: "{{ trivy_release_download_url }}/download/v{{ trivy_version }}/trivy_{{ trivy_version }}_linux_{{ system_architecture }}.tar.gz.sha256"
+
+go_arch_map:
+  x86_64: '64bit'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+systemd_lib_directory: /lib/systemd/system
+
+...
