@@ -1,99 +1,82 @@
 ---
 
-- name: detect binary file for trivy on {{ trivy_ui_delegate_to }}
+- name: create install directory
+  ansible.builtin.file:
+    path: "{{ trivy_install_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: detect extracted binary file for trivy on '{{ trivy_delegate_to }}'
   become: false
   delegate_to: "{{ trivy_delegate_to }}"
+  run_once: "{{ 'false' if trivy_direct_download else 'true' }}"
   ansible.builtin.stat:
     path: "{{ trivy_local_tmp_directory }}/trivy"
   register: stat_file_binary
 
-- name: propagate trivy binaries
-  ansible.builtin.copy:
-    src: "{{ trivy_local_tmp_directory }}/trivy"
-    dest: "{{ trivy_install_path }}/trivy"
-    mode: 0755
-    owner: "{{ trivy_system_user }}"
-    group: "{{ trivy_system_group }}"
-    remote_src: "{{ 'true' if trivy_direct_download else 'false' }}"
+- name: fail when extracted binary are missing
+  ansible.builtin.fail:
+    msg: "missing extracted binary on ansible controller"
   when:
-    - stat_file_binary.stat.exists
+    - not stat_file_binary.stat.exists
 
-- name: make files executable
-  ansible.builtin.file:
-    path: "{{ trivy_install_path }}/trivy"
-    mode: 0755
-    owner: "{{ trivy_system_user }}"
-    group: "{{ trivy_system_group }}"
+- name: detect installed trivy binary
+  ansible.builtin.stat:
+    path: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
+  register: stat_trivy_binary
+
+- name: detect activated trivy binary
+  ansible.builtin.stat:
+    path: /usr/bin/{{ trivy_release.binary }}
+  register: stat_trivy_activated
+
+- name: install and activate trivy
+  when:
+    - (stat_trivy_binary.stat is defined and not stat_trivy_binary.stat.exists | default('false')) or
+      not stat_trivy_activated.stat | bodsch.prometheus.linked_version(trivy_install_path, trivy_version)
+  block:
+    - name: propagate files
+      block:
+        - name: propagate trivy binary
+          ansible.builtin.copy:
+            src: "{{ trivy_local_tmp_directory }}/{{ trivy_release.binary }}"
+            dest: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
+            mode: 0755
+            owner: root
+            group: root
+            remote_src: "{{ 'true' if trivy_direct_download else 'false' }}"
+
+        - name: make files executable
+          ansible.builtin.file:
+            path: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
+            mode: 0755
+            owner: root
+            group: root
+
+        - name: create link to binary
+          ansible.builtin.file:
+            src: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
+            dest: /usr/bin/{{ trivy_release.binary }}
+            state: link
+            force: true
+            follow: false
+
+      rescue:
+        - name: delete install directory
+          ansible.builtin.file:
+            path: "{{ trivy_install_path }}"
+            state: absent
+
+        - name: exit with fail
+          ansible.builtin.fail:
+            msg: A serious error occurred during the installation of the binary.
 
 - name: create custom fact file
   bodsch.core.facts:
     name: trivy
     facts:
       version: "{{ trivy_version }}"
-
-- name: create trivy data directory
-  ansible.builtin.file:
-    state: directory
-    path: "{{ trivy_data_dir }}"
-    mode: 0770
-    owner: "{{ trivy_system_user }}"
-    group: "{{ trivy_system_group }}"
-
-- name: create link to binary
-  ansible.builtin.file:
-    src: "{{ trivy_install_path }}/trivy"
-    dest: "/usr/bin/trivy"
-    state: link
-    force: true
-    follow: false
-  notify:
-    - restart trivy
-
-- name: systemd
-  when:
-    - ansible_service_mgr | lower == "systemd"
-  block:
-    - name: create systemd service unit
-      ansible.builtin.template:
-        src: "init/systemd/trivy.service.j2"
-        dest: "{{ systemd_lib_directory }}/trivy.service"
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - daemon-reload
-        - restart trivy
-
-    - name: create systemd service configuration
-      ansible.builtin.template:
-        src: "trivy.j2"
-        dest: "{{ trivy_defaults_directory }}/trivy"
-        force: true
-        owner: root
-        group: "{{ trivy_system_group }}"
-        mode: 0640
-      notify:
-        - validate config
-        - reload trivy
-
-- name: openrc
-  when:
-    - ansible_service_mgr | lower == "openrc"
-  block:
-    - name: create openrc service configuration
-      ansible.builtin.template:
-        src: "init/openrc/conf.d/trivy.j2"
-        dest: "/etc/conf.d/trivy"
-        owner: root
-        group: root
-        mode: 0644
-
-    - name: create openrc init file
-      ansible.builtin.template:
-        src: "init/openrc/init.d/trivy.j2"
-        dest: "/etc/init.d/trivy"
-        owner: root
-        group: root
-        mode: 0750
 
 ...

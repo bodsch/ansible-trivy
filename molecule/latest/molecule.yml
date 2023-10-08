@@ -1,4 +1,7 @@
 ---
+
+role_name_check: 1
+
 dependency:
   name: galaxy
 
@@ -18,9 +21,6 @@ platforms:
     docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
     privileged: true
     pre_build_image: true
-    published_ports:
-      - 5000:5000
-      - 5001:5001
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 

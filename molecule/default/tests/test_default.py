@@ -107,22 +107,6 @@ def local_facts(host):
     return host.ansible("setup").get("ansible_facts").get("ansible_local").get("trivy")
 
 
-def test_directories(host, get_vars):
-    """
-    """
-    root_dir = get_vars.get("trivy_storage", {}).get("filesystem", {}).get("rootdirectory", {})
-
-    directories = []
-    directories.append("/etc/docker/trivy")
-
-    if root_dir:
-        directories.append(root_dir)
-
-    for dirs in directories:
-        d = host.file(dirs)
-        assert d.is_directory
-
-
 def test_files(host, get_vars):
     """
     """
@@ -135,8 +119,6 @@ def test_files(host, get_vars):
     version = local_facts(host).get("version")
 
     install_dir = get_vars.get("trivy_install_path")
-    defaults_dir = get_vars.get("trivy_defaults_directory")
-    config_dir = get_vars.get("trivy_config_dir")
 
     if 'latest' in install_dir:
         install_dir = install_dir.replace('latest', version)
@@ -146,10 +128,6 @@ def test_files(host, get_vars):
 
     if install_dir:
         files.append(f"{install_dir}/trivy")
-    if defaults_dir and not distribution == "artix":
-        files.append(f"{defaults_dir}/trivy")
-    if config_dir:
-        files.append(f"{config_dir}/config.yml")
 
     print(files)
 
@@ -159,28 +137,13 @@ def test_files(host, get_vars):
         assert f.is_file
 
 
-def test_user(host, get_vars):
-    """
-    """
-    user = get_vars.get("trivy_system_user", "trivy")
-    group = get_vars.get("trivy_system_group", "trivy")
-
-    assert host.group(group).exists
-    assert host.user(user).exists
-    assert group in host.user(user).groups
-    assert host.user(user).home == "/nonexistent"
-
-
-def test_service(host, get_vars):
-    service = host.service("trivy")
-    assert service.is_enabled
-    assert service.is_running
-
-
-def test_open_port(host, get_vars):
-    """
-    """
-    listen_address = "127.0.0.1:5000"
-
-    service = host.socket(f"tcp://{listen_address}")
-    assert service.is_listening
+# def test_user(host, get_vars):
+#     """
+#     """
+#     user = get_vars.get("trivy_system_user", "trivy")
+#     group = get_vars.get("trivy_system_group", "trivy")
+#
+#     assert host.group(group).exists
+#     assert host.user(user).exists
+#     assert group in host.user(user).groups
+#     assert host.user(user).home == "/nonexistent"
