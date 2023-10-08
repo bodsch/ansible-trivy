@@ -1,5 +1,5 @@
 ---
-name: registry with configuration
+name: latest trivy version
 
 on:
   workflow_dispatch:
