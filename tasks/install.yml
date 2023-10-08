@@ -35,7 +35,7 @@
 - name: install and activate trivy
   when:
     - (stat_trivy_binary.stat is defined and not stat_trivy_binary.stat.exists | default('false')) or
-      not stat_trivy_activated.stat | bodsch.prometheus.linked_version(trivy_install_path, trivy_version)
+      not stat_trivy_activated.stat | bodsch.core.linked_version(trivy_install_path, trivy_version)
   block:
     - name: propagate files
       block:
