@@ -26,7 +26,7 @@ jobs:
         ansible-version:
           - '6.1'
         scenario:
-          - configured
+          - latest
 
     steps:
       - name: check out the codebase.
