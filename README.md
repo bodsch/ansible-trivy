@@ -1,7 +1,7 @@
 
 # Ansible Role:  `trivy` 
 
-Ansible role to install and configure docker [trivy](https://github.com/distribution/distribution).
+Ansible role to install [trivy](https://github.com/aquasecurity/trivy).
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-trivy/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-trivy)][issues]
@@ -64,139 +64,12 @@ If you want to use something stable, please use a [Tagged Version](https://githu
 ## Configuration
 
 ```yaml
-trivy_version: 2.8.1
-
-trivy_release_download_url: https://github.com/distribution/distribution/releases
-
-trivy_system_user: trivy
-trivy_system_group: trivy
-trivy_config_dir: /etc/docker/trivy
+trivy_version: 0.45.1
 
 trivy_direct_download: false
 
-trivy_service: {}
-trivy_log: {}
-trivy_storage: {}
-trivy_auth: {}
-trivy_middleware: {}
-trivy_reporting: {}
-trivy_http: {}
-trivy_notifications: {}
-trivy_redis: {}
-trivy_health: {}
-trivy_proxy: {}
-trivy_compatibility: {}
-trivy_validation: {}
+trivy_release: {}
 ```
-
-### `trivy_log`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#log)
-
-```yaml
-trivy_log:
-  accesslog:
-    disabled: true
-  level: info
-  formatter: text
-  fields: {}
-```
-
-### `trivy_storage`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#storage)
-```yaml
-trivy_storage:
-  filesystem:
-    rootdirectory: /var/lib/trivy
-    maxthreads: 100
-  delete:
-    enabled: false
-  cache:
-    blobdescriptorsize: 10000
-
-```
-
-### `trivy_auth`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#auth)
-```yaml
-trivy_auth: {}
-```
-
-### `trivy_middleware`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#middleware)
-```yaml
-trivy_middleware: {}
-```
-
-### `trivy_reporting`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#reporting)
-```yaml
-trivy_reporting: {}
-```
-
-### `trivy_http`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#http)
-```yaml
-
-trivy_http:
-  addr: localhost:5000
-  secret: "{{ ansible_host | b64encode }}"
-  relativeurls: true
-  debug:
-    addr: localhost:5001
-    prometheus:
-      enabled: true
-      path: /metrics
-```
-
-### `trivy_notifications`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#notifications)
-```yaml
-trivy_notifications: {}
-```
-
-### `trivy_redis`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#redis)
-```yaml
-trivy_redis: {}
-```
-
-### `trivy_health`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#health)
-```yaml
-trivy_health: {}
-```
-
-### `trivy_proxy`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#proxy)
-
-```yaml
-trivy_proxy: {}
-```
-
-### `trivy_compatibility`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#compatibility)
-```yaml
-trivy_compatibility: {}
-```
-
-### `trivy_validation`
-
-[upstream doku](https://github.com/distribution/distribution/blob/main/docs/configuration.md#validation)
-```yaml
-trivy_validation: {}
-```
-
 
 ---
 
