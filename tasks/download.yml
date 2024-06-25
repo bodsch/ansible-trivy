@@ -42,7 +42,7 @@
   ansible.builtin.file:
     path: "{{ trivy_local_tmp_directory }}"
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: detect the downloaded trivy archive
   become: false
@@ -90,7 +90,7 @@
         url: "{{ trivy_release.download_url }}/download/v{{ trivy_version }}/{{ trivy_release.file }}"
         dest: "{{ trivy_local_tmp_directory }}/{{ trivy_release.file }}"
         checksum: "{{ __trivy_checksum | default(omit) }}"
-        mode: 0640
+        mode: "0640"
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5

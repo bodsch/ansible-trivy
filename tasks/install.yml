@@ -6,7 +6,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: detect extracted binary file for trivy on '{{ trivy_delegate_to }}'
   become: false
@@ -43,7 +43,7 @@
           ansible.builtin.copy:
             src: "{{ trivy_local_tmp_directory }}/{{ trivy_release.binary }}"
             dest: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
-            mode: 0755
+            mode: "0755"
             owner: root
             group: root
             remote_src: "{{ 'true' if trivy_direct_download else 'false' }}"
@@ -51,7 +51,7 @@
         - name: make files executable
           ansible.builtin.file:
             path: "{{ trivy_install_path }}/{{ trivy_release.binary }}"
-            mode: 0755
+            mode: "0755"
             owner: root
             group: root
 

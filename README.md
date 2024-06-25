@@ -6,12 +6,12 @@ Ansible role to install [trivy](https://github.com/aquasecurity/trivy).
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-trivy/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-trivy)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-trivy)][releases]
-[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
+[![Ansible Downloads](https://img.shields.io/ansible/role/d/bodsch/trivy?logo=ansible)][galaxy]
 
 [ci]: https://github.com/bodsch/ansible-trivy/actions
 [issues]: https://github.com/bodsch/ansible-trivy/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-trivy/releases
-[quality]: https://galaxy.ansible.com/bodsch/trivy
+[galaxy]: https://galaxy.ansible.com/ui/standalone/roles/bodsch/trivy/
 
 If `latest` is set for `trivy_version`, the role tries to install the latest release version.  
 **Please use this with caution, as incompatibilities between releases may occur!**
