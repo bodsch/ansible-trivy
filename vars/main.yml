@@ -19,7 +19,7 @@ trivy_requirements:
 trivy_defaults_release:
   # https://github.com/aquasecurity/trivy/releases/download/v0.44.0/trivy_0.44.0_Linux-64bit.tar.gz
   download_url: https://github.com/aquasecurity/trivy/releases/
-  file: trivy_{{ trivy_version }}_{{ ansible_system }}-{{ system_architecture }}.tar.gz
+  file: trivy_{{ trivy_version }}_{{ ansible_facts.system }}-{{ system_architecture }}.tar.gz
   binary: trivy
   # https://github.com/aquasecurity/trivy/releases/download/v0.44.0/trivy_0.44.0_checksums.txt
   checksum: trivy_{{ trivy_version }}_checksums.txt
@@ -30,7 +30,7 @@ go_arch_map:
   x86_64: '64bit'
   aarch64: 'ARM64'
 
-system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+system_architecture: "{{ go_arch_map[ansible_facts.architecture] | default(ansible_facts.architecture) }}"
 
 systemd_lib_directory: /lib/systemd/system
 

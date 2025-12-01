@@ -1,6 +1,6 @@
 ---
 
-trivy_version: 0.64.0
+trivy_version: 0.67.2
 
 trivy_direct_download: false
 
